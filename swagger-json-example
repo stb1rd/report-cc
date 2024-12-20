@@ -1,0 +1,84 @@
+{
+  "mapSize": [
+    180,
+    180,
+    30
+  ],
+  "name": "CleanCrib envious",
+  "points": 275,
+  "fences": [
+    [
+      152,
+      51,
+      10
+    ]
+  ],
+  "snakes": [
+    {
+      "id": "db59f7bff43351d69b540c666fa8ff9f1c81f05c",
+      "direction": [
+        1,
+        0,
+        0
+      ],
+      "oldDirection": [
+        0,
+        0,
+        -1
+      ],
+      "geometry": [
+        [
+          152,
+          51,
+          10
+        ]
+      ],
+      "deathCount": 16,
+      "status": "alive",
+      "reviveRemainMs": 0
+    }
+  ],
+  "enemies": [
+    {
+      "geometry": [
+        [
+          152,
+          51,
+          10
+        ]
+      ],
+      "status": "alive",
+      "kills": 0
+    }
+  ],
+  "food": [
+    {
+      "c": [
+        152,
+        51,
+        10
+      ],
+      "points": 6
+    }
+  ],
+  "specialFood": {
+    "golden": [
+      [
+        152,
+        51,
+        10
+      ]
+    ],
+    "suspicious": [
+      [
+        152,
+        51,
+        10
+      ]
+    ]
+  },
+  "turn": 1548,
+  "reviveTimeoutSec": 5,
+  "tickRemainMs": 60,
+  "errors": []
+}
