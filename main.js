@@ -1,9 +1,33 @@
 import * as THREE from 'three';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+import { GUI } from 'three/addons/libs/lil-gui.module.min.js';
 
 const POLLING_INTERVAL = 1000;
 const API_URL = 'http://localhost:8080/';
 const BASE_PATH = '/report-cc';
+
+class MinMaxGUIHelper {
+  constructor(obj, minProp, maxProp, minDif) {
+    this.obj = obj;
+    this.minProp = minProp;
+    this.maxProp = maxProp;
+    this.minDif = minDif;
+  }
+  get min() {
+    return this.obj[this.minProp];
+  }
+  set min(v) {
+    this.obj[this.minProp] = v;
+    this.obj[this.maxProp] = Math.max(this.obj[this.maxProp], v + this.minDif);
+  }
+  get max() {
+    return this.obj[this.maxProp];
+  }
+  set max(v) {
+    this.obj[this.maxProp] = v;
+    this.min = this.min; // this will call the min setter
+  }
+}
 
 const getCube = (x, y, z, color = 'green', opacity = 0.3) => {
   const cubeSize = 1;
@@ -21,12 +45,20 @@ function main() {
   renderer.setSize(window.innerWidth, window.innerHeight);
   document.body.appendChild(renderer.domElement);
 
-  const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+  const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 500);
   camera.position.set(-200, 200, -200);
 
   const controls = new OrbitControls(camera, renderer.domElement);
   controls.target.set(0, 5, 0);
   controls.update();
+
+  function updateCamera() {
+    camera.updateProjectionMatrix();
+  }
+
+  const gui = new GUI();
+  const minMaxGUIHelper = new MinMaxGUIHelper(camera, 'near', 'far', 0.1);
+  gui.add(minMaxGUIHelper, 'max', 0.1, 1000, 0.1).name('Distance').onChange(updateCamera);
 
   const scene = new THREE.Scene();
   scene.background = new THREE.Color('white');
