@@ -3,6 +3,7 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 
 const POLLING_INTERVAL = 1000;
 const API_URL = 'http://localhost:8080/';
+const BASE_PATH = '/report-cc/';
 
 const getCube = (x, y, z, color = 'green', opacity = 0.3) => {
   const cubeSize = 1;
@@ -121,13 +122,14 @@ function main() {
 
   let activeFileIndex;
   const mocks = import.meta.glob('/mocks/*.json');
+  const mocksLength = Object.keys(mocks).length;
   Object.entries(mocks).forEach(([fullName, file]) => {
     const name = fullName.split('/').at(-1);
     const button = document.createElement('button');
     button.setAttribute(`for`, name);
     button.innerHTML = name;
     button.onclick = async () => {
-      const response = await fetch(fullName);
+      const response = await fetch(`${BASE_PATH}${fullName}`);
       const state = await response.json();
       renderState(state);
     };
@@ -135,8 +137,29 @@ function main() {
     document.getElementById('states').appendChild(button);
   });
 
-  document.getElementById('prev').onchange = () => {
-    console.log('WIP');
+  const renderMock = async (targetIndex) => {
+    const fullName = Object.keys(mocks).at(targetIndex);
+    const response = await fetch(`${BASE_PATH}${fullName}`);
+    const state = await response.json();
+    renderState(state);
+  };
+
+  document.getElementById('prev').onclick = async () => {
+    if (isNaN(activeFileIndex) || !activeFileIndex) {
+      activeFileIndex = mocksLength - 1;
+    } else {
+      activeFileIndex = activeFileIndex - 1;
+    }
+    renderMock(activeFileIndex);
+  };
+
+  document.getElementById('next').onclick = async () => {
+    if (isNaN(activeFileIndex) || activeFileIndex === mocksLength - 1) {
+      activeFileIndex = 0;
+    } else {
+      activeFileIndex = activeFileIndex + 1;
+    }
+    renderMock(activeFileIndex);
   };
 
   let timerId;
