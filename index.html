@@ -7,9 +7,43 @@
       body {
         margin: 0;
       }
+      legend {
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        width: 100%;
+        background: white;
+        border-top: 1px solid #ddd;
+        padding: 20px;
+        box-sizing: border-box;
+        display: flex;
+        gap: 20px;
+      }
+      label {
+        display: flex;
+        align-items: center;
+      }
+      #states {
+        display: flex;
+        gap: 4px;
+        align-items: center;
+      }
     </style>
-    <script type="module" crossorigin src="/report-cc/assets/index-BPd9TGSw.js"></script>
+    <script type="module" crossorigin src="/report-cc/assets/index-Cjda949x.js"></script>
   </head>
   <body>
+    <legend>
+      <label for="isLive">
+        <input id="isLive" type="checkbox" />
+        is live
+      </label>
+      <div>
+        <button id="prev">prev</button>
+        <button id="next">next</button>
+      </div>
+      <div id="states">
+        <span>states</span>
+      </div>
+    </legend>
   </body>
 </html>
