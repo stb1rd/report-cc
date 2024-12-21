@@ -1,9 +1,8 @@
 import * as THREE from 'three';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
-import sampleJson from '/example_response.json';
 
 const POLLING_INTERVAL = 1000;
-const API_URL = '';
+const API_URL = 'http://localhost:4000/';
 
 const getCube = (x, y, z, color = 'green', opacity = 0.3) => {
   const cubeSize = 1;
@@ -65,13 +64,7 @@ function main() {
     scene.add(mesh);
   };
 
-  if (!API_URL) {
-    throw Error('API_URL must be set');
-  }
-
-  setTimeout(async () => {
-    const response = await fetch(API_URL);
-    const state = await response.json();
+  const renderState = (state) => {
     scene.clear();
 
     {
@@ -124,7 +117,27 @@ function main() {
     });
 
     console.log(`=== end of turn ${state.turn} ===`);
-  }, POLLING_INTERVAL);
+  };
+
+  let activeFileIndex;
+  const mocks = import.meta.glob('/mocks/*.json');
+  Object.entries(mocks).forEach(([fullName, file]) => {
+    const name = fullName.split('/').at(-1);
+    const button = document.createElement('button');
+    button.setAttribute(`for`, name);
+    button.innerHTML = name;
+    button.onclick = async () => {
+      const response = await fetch(fullName);
+      const state = await response.json();
+      renderState(state);
+    };
+
+    document.getElementById('states').appendChild(button);
+  });
+
+  document.getElementById('prev').onchange = () => {
+    console.log('WIP');
+  };
 
   function render() {
     renderer.render(scene, camera);
@@ -135,3 +148,23 @@ function main() {
 }
 
 main();
+
+let timerId;
+document.getElementById('isLive').onchange = (event) => {
+  if (event.target.checked) {
+    if (!API_URL) {
+      console.error('API_URL is null');
+      event.target.checked = false;
+    } else {
+      timerId = setInterval(async () => {
+        const response = await fetch(API_URL);
+        const state = await response.json();
+
+        renderState(state);
+      }, POLLING_INTERVAL);
+    }
+  }
+  if (!event.target.checked) {
+    clearTimeout(timerId);
+  }
+};
