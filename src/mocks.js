@@ -14,7 +14,7 @@ document.getElementById('prev').onclick = async () => {
   renderMock(activeFileIndex);
 };
 
-document.getElementById('next').onclick = async () => {
+const handleNext = async () => {
   if (isNaN(activeFileIndex) || activeFileIndex === mocksLength - 1) {
     activeFileIndex = 0;
   } else {
@@ -22,6 +22,7 @@ document.getElementById('next').onclick = async () => {
   }
   renderMock(activeFileIndex);
 };
+document.getElementById('next').onclick = () => handleNext();
 
 export const renderMock = async (targetIndex) => {
   const fullName = Object.keys(mocks).at(targetIndex);
@@ -44,4 +45,8 @@ export const initMocks = () => {
 
     document.getElementById('states').appendChild(button);
   });
+
+  setInterval(() => {
+    handleNext();
+  }, 1000);
 };

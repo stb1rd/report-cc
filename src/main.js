@@ -7,15 +7,16 @@ import { initGui } from '/src/min-max-gui-helper.js';
 import * as live from '/src/live.js';
 
 function main() {
-  const renderer = new THREE.WebGLRenderer();
+  const renderer = new THREE.WebGLRenderer({ antialias: true });
   renderer.setSize(window.innerWidth, window.innerHeight);
   document.body.appendChild(renderer.domElement);
 
   const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 500);
-  camera.position.set(90, 120, -120);
-  camera.lookAt(new THREE.Vector3(90, 90, 90));
+  camera.position.set(120, 210, 30);
+  // camera.position.set(91.5, 210, 0);
+  camera.lookAt(new THREE.Vector3(80, 210, 60));
 
-  initGui(camera);
+  // initGui(camera);
   initMocks();
   initControls(camera, renderer);
 
