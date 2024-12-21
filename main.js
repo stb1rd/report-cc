@@ -2,7 +2,7 @@ import * as THREE from 'three';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 
 const POLLING_INTERVAL = 1000;
-const API_URL = 'http://localhost:4000/';
+const API_URL = 'http://localhost:8080/';
 
 const getCube = (x, y, z, color = 'green', opacity = 0.3) => {
   const cubeSize = 1;
@@ -147,8 +147,6 @@ function main() {
   requestAnimationFrame(render);
 }
 
-main();
-
 let timerId;
 document.getElementById('isLive').onchange = (event) => {
   if (event.target.checked) {
@@ -168,3 +166,5 @@ document.getElementById('isLive').onchange = (event) => {
     clearTimeout(timerId);
   }
 };
+
+main();
