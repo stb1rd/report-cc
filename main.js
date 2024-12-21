@@ -95,7 +95,7 @@ function main() {
   });
 
   sampleJson.food.forEach((foodItem) => {
-    const cube = getCube(foodItem.c[0], foodItem.c[1], foodItem.c[2], 'moccasin');
+    const cube = getCube(foodItem.c[0], foodItem.c[1], foodItem.c[2], 'moccasin', 0.9);
     scene.add(cube);
   });
 
