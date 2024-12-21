@@ -1,6 +1,7 @@
 {
   "scripts": {
-    "dev": "vite --port 3000"
+    "dev": "vite --port 3000",
+    "build": "vite build"
   },
   "dependencies": {
     "three": "^0.171.0"
