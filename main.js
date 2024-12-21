@@ -3,7 +3,7 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 
 const POLLING_INTERVAL = 1000;
 const API_URL = 'http://localhost:8080/';
-const BASE_PATH = '/report-cc/';
+const BASE_PATH = '/report-cc';
 
 const getCube = (x, y, z, color = 'green', opacity = 0.3) => {
   const cubeSize = 1;
