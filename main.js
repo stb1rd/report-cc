@@ -139,6 +139,26 @@ function main() {
     console.log('WIP');
   };
 
+  let timerId;
+  document.getElementById('isLive').onchange = (event) => {
+    if (event.target.checked) {
+      if (!API_URL) {
+        console.error('API_URL is null');
+        event.target.checked = false;
+      } else {
+        timerId = setInterval(async () => {
+          const response = await fetch(API_URL);
+          const state = await response.json();
+
+          renderState(state);
+        }, POLLING_INTERVAL);
+      }
+    }
+    if (!event.target.checked) {
+      clearTimeout(timerId);
+    }
+  };
+
   function render() {
     renderer.render(scene, camera);
     requestAnimationFrame(render);
@@ -146,25 +166,5 @@ function main() {
 
   requestAnimationFrame(render);
 }
-
-let timerId;
-document.getElementById('isLive').onchange = (event) => {
-  if (event.target.checked) {
-    if (!API_URL) {
-      console.error('API_URL is null');
-      event.target.checked = false;
-    } else {
-      timerId = setInterval(async () => {
-        const response = await fetch(API_URL);
-        const state = await response.json();
-
-        renderState(state);
-      }, POLLING_INTERVAL);
-    }
-  }
-  if (!event.target.checked) {
-    clearTimeout(timerId);
-  }
-};
 
 main();
