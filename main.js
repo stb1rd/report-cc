@@ -85,8 +85,8 @@ function main() {
       scene.add(cube);
     });
 
-    state.snakes.forEach((snake) => {
-      console.log(`snake green | ${snake.status} | ${snake.geometry}`);
+    state.snakes.forEach((snake, i) => {
+      console.log(`snake green #${i} | ${snake.status} | length: ${snake.geometry.length} | head at: ${snake.geometry[0] || ''}`);
       snake.geometry.forEach((snakeCoords) => {
         const cube = getCube(snakeCoords[0], snakeCoords[1], snakeCoords[2], 'green', 0.9);
         scene.add(cube);
