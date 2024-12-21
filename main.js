@@ -1,45 +1,12 @@
-// import * as THREE from 'three';
-// import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
-
-// const scene = new THREE.Scene();
-// const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
-// camera.position.set(0, 10, 20);
-
-// const renderer = new THREE.WebGLRenderer();
-// renderer.setSize(window.innerWidth, window.innerHeight);
-// document.body.appendChild(renderer.domElement);
-
-// const controls = new OrbitControls(camera, renderer.domElement);
-// controls.target.set(0, 5, 0);
-// controls.update();
-
-// const geometry = new THREE.BoxGeometry(1, 1, 1);
-// const material = new THREE.MeshBasicMaterial({ color: 0x00ff00 });
-// const cube = new THREE.Mesh(geometry, material);
-// scene.add(cube);
-
-// camera.position.z = 10;
-// controls.update();
-
-// const axesHelper = new THREE.AxesHelper(50);
-// scene.add(axesHelper);
-
-// function animate() {
-//   renderer.render(scene, camera);
-//   cube.rotation.x += 0.01;
-//   cube.rotation.y += 0.01;
-//   controls.update();
-// }
-// renderer.setAnimationLoop(animate);
-
 import * as THREE from 'three';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+import sampleJson from '/example_response.json';
 
-const getCube = (x, y, z, color = 'green') => {
+const getCube = (x, y, z, color = 'green', opacity = 0.3) => {
   const cubeSize = 1;
   const cubeGeo = new THREE.BoxGeometry(cubeSize, cubeSize, cubeSize);
 
-  const cubeMat = new THREE.MeshBasicMaterial({ color, transparent: true, opacity: 0.3 });
+  const cubeMat = new THREE.MeshBasicMaterial({ color, transparent: true, opacity });
   const mesh = new THREE.Mesh(cubeGeo, cubeMat);
   mesh.position.set(x * cubeSize + cubeSize / 2, y * cubeSize + cubeSize / 2, z * cubeSize + cubeSize / 2);
 
@@ -102,15 +69,49 @@ function main() {
     scene.add(light);
   }
 
-  // addPlane();
-  fillEdges(180, 180, 60);
-  const c1 = getCube(0, 0, 0);
-  const c2 = getCube(1, 0, 0);
-  const c3 = getCube(2, 0, 0);
+  console.log(`=== start of turn ${sampleJson.turn} ===`);
+  console.log(`score: ${sampleJson.points}`);
 
-  scene.add(c1);
-  scene.add(c2);
-  scene.add(c3);
+  fillEdges(sampleJson.mapSize[0], sampleJson.mapSize[1], sampleJson.mapSize[2]);
+
+  sampleJson.fences.forEach((fenceCoords) => {
+    const cube = getCube(fenceCoords[0], fenceCoords[1], fenceCoords[2], '#ccc');
+    scene.add(cube);
+  });
+
+  sampleJson.snakes.forEach((snake) => {
+    console.log(`snake green | ${snake.status} | ${snake.geometry}`);
+    snake.geometry.forEach((snakeCoords) => {
+      const cube = getCube(snakeCoords[0], snakeCoords[1], snakeCoords[2], 'green', 0.9);
+      scene.add(cube);
+    });
+  });
+
+  sampleJson.enemies.forEach((enemy) => {
+    enemy.geometry.forEach((enemyCoords) => {
+      const cube = getCube(enemyCoords[0], enemyCoords[1], enemyCoords[2], enemy.status === 'alive' ? 'red' : '#000');
+      scene.add(cube);
+    });
+  });
+
+  sampleJson.food.forEach((foodItem) => {
+    const cube = getCube(foodItem.c[0], foodItem.c[1], foodItem.c[2], 'moccasin');
+    scene.add(cube);
+  });
+
+  console.log(`golden food count: ${sampleJson.specialFood.golden.length}`);
+  sampleJson.specialFood.golden.forEach((goldenFoodItem) => {
+    console.log(`golden food coords :: ${goldenFoodItem}`);
+    const cube = getCube(goldenFoodItem[0], goldenFoodItem[1], goldenFoodItem[2], 'gold', 0.9);
+    scene.add(cube);
+  });
+
+  sampleJson.specialFood.suspicious.forEach((suspiciousItem) => {
+    const cube = getCube(suspiciousItem[0], suspiciousItem[1], suspiciousItem[2], 'mediumslateblue');
+    scene.add(cube);
+  });
+
+  console.log(`=== end of turn ${sampleJson.turn} ===`);
 
   function render() {
     renderer.render(scene, camera);
