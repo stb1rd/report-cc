@@ -72,6 +72,7 @@ function main() {
   setTimeout(async () => {
     const response = await fetch(API_URL);
     const state = await response.json();
+    scene.clear();
 
     {
       const color = 0xffffff;
