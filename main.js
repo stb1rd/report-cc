@@ -2,6 +2,9 @@ import * as THREE from 'three';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 import sampleJson from '/example_response.json';
 
+const POLLING_INTERVAL = 1000;
+const API_URL = '';
+
 const getCube = (x, y, z, color = 'green', opacity = 0.3) => {
   const cubeSize = 1;
   const cubeGeo = new THREE.BoxGeometry(cubeSize, cubeSize, cubeSize);
@@ -62,56 +65,65 @@ function main() {
     scene.add(mesh);
   };
 
-  {
-    const color = 0xffffff;
-    const intensity = 5;
-    const light = new THREE.AmbientLight(color, intensity);
-    scene.add(light);
+  if (!API_URL) {
+    throw Error('API_URL must be set');
   }
 
-  console.log(`=== start of turn ${sampleJson.turn} ===`);
-  console.log(`score: ${sampleJson.points}`);
+  setTimeout(async () => {
+    const response = await fetch(API_URL);
+    const state = await response.json();
 
-  fillEdges(sampleJson.mapSize[0], sampleJson.mapSize[1], sampleJson.mapSize[2]);
+    {
+      const color = 0xffffff;
+      const intensity = 5;
+      const light = new THREE.AmbientLight(color, intensity);
+      scene.add(light);
+    }
 
-  sampleJson.fences.forEach((fenceCoords) => {
-    const cube = getCube(fenceCoords[0], fenceCoords[1], fenceCoords[2], '#ccc');
-    scene.add(cube);
-  });
+    console.log(`=== start of turn ${state.turn} ===`);
+    console.log(`score: ${state.points}`);
 
-  sampleJson.snakes.forEach((snake) => {
-    console.log(`snake green | ${snake.status} | ${snake.geometry}`);
-    snake.geometry.forEach((snakeCoords) => {
-      const cube = getCube(snakeCoords[0], snakeCoords[1], snakeCoords[2], 'green', 0.9);
+    fillEdges(state.mapSize[0], state.mapSize[1], state.mapSize[2]);
+
+    state.fences.forEach((fenceCoords) => {
+      const cube = getCube(fenceCoords[0], fenceCoords[1], fenceCoords[2], '#ccc');
       scene.add(cube);
     });
-  });
 
-  sampleJson.enemies.forEach((enemy) => {
-    enemy.geometry.forEach((enemyCoords) => {
-      const cube = getCube(enemyCoords[0], enemyCoords[1], enemyCoords[2], enemy.status === 'alive' ? 'red' : '#000');
+    state.snakes.forEach((snake) => {
+      console.log(`snake green | ${snake.status} | ${snake.geometry}`);
+      snake.geometry.forEach((snakeCoords) => {
+        const cube = getCube(snakeCoords[0], snakeCoords[1], snakeCoords[2], 'green', 0.9);
+        scene.add(cube);
+      });
+    });
+
+    state.enemies.forEach((enemy) => {
+      enemy.geometry.forEach((enemyCoords) => {
+        const cube = getCube(enemyCoords[0], enemyCoords[1], enemyCoords[2], enemy.status === 'alive' ? 'red' : '#000');
+        scene.add(cube);
+      });
+    });
+
+    state.food.forEach((foodItem) => {
+      const cube = getCube(foodItem.c[0], foodItem.c[1], foodItem.c[2], 'moccasin', 0.9);
       scene.add(cube);
     });
-  });
 
-  sampleJson.food.forEach((foodItem) => {
-    const cube = getCube(foodItem.c[0], foodItem.c[1], foodItem.c[2], 'moccasin', 0.9);
-    scene.add(cube);
-  });
+    console.log(`golden food count: ${state.specialFood.golden.length}`);
+    state.specialFood.golden.forEach((goldenFoodItem) => {
+      console.log(`golden food coords :: ${goldenFoodItem}`);
+      const cube = getCube(goldenFoodItem[0], goldenFoodItem[1], goldenFoodItem[2], 'gold', 0.9);
+      scene.add(cube);
+    });
 
-  console.log(`golden food count: ${sampleJson.specialFood.golden.length}`);
-  sampleJson.specialFood.golden.forEach((goldenFoodItem) => {
-    console.log(`golden food coords :: ${goldenFoodItem}`);
-    const cube = getCube(goldenFoodItem[0], goldenFoodItem[1], goldenFoodItem[2], 'gold', 0.9);
-    scene.add(cube);
-  });
+    state.specialFood.suspicious.forEach((suspiciousItem) => {
+      const cube = getCube(suspiciousItem[0], suspiciousItem[1], suspiciousItem[2], 'mediumslateblue');
+      scene.add(cube);
+    });
 
-  sampleJson.specialFood.suspicious.forEach((suspiciousItem) => {
-    const cube = getCube(suspiciousItem[0], suspiciousItem[1], suspiciousItem[2], 'mediumslateblue');
-    scene.add(cube);
-  });
-
-  console.log(`=== end of turn ${sampleJson.turn} ===`);
+    console.log(`=== end of turn ${state.turn} ===`);
+  }, POLLING_INTERVAL);
 
   function render() {
     renderer.render(scene, camera);
